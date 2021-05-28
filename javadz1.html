@@ -12,93 +12,167 @@
             return number;
         }
 
-        // 1. С помощью цикла while вывести все простые числа в промежутке от 0 до 100
+        // 1. Написать функцию, преобразующую число в объект. Передавая на вход число от 0 до 999, мы должны получить на выходе объект, в котором в соответствующих свойствах описаны единицы, десятки и сотни. Например для числа 245 мы должны получить следующий объект: {‘единицы’: 5, ‘десятки’: 4, 'сотни’: 2}. Если число превышает 999, необходимо выдать соответствующее сообщение с помощью console.log и вернуть пустой объект.
+function num2Obj(num){
+	if (isNaN(num)){
+	  console.log('Ошибка: параметр не является числом');
+	} else if(num>999 || num<0){
+		console.log('Ошибка: допустимый диапазон 0-999');
+	  var obj={};
+	  return obj;
+	} else {
+		var digits=['единицы','десятки','сотни'];
+	  var obj={};
+	  var i=0;
+	  for(var i=0; num!=0; i++){
+	  	obj[digits[i]]=num%10;
+	  	num=(num-num%10)/10;
+		}
+		}	
+		return obj;
+	}
+console.log(num2Obj(245));
+console.log(num2Obj(45));
+console.log(num2Obj(5));
 
-        console.log('======== 1 задание ========');
-        let nums = 0;
-        while (nums <= 100) {
-            let check = true;
-            for (let i = 2; i < nums; i++){
-                if (nums%i === 0) {
-                    check = false;
-                    break;
-                }
+        // 2 Продолжить работу с интернет-магазином:
+        // 2.1(2.2) В прошлом домашнем задании вы реализовали корзину на базе массивов. Какими объектами можно заменить их элементы?
+        // Ответ: Можно использовать решение типа:
+String[] row = new String[2];
+row[0] = "pencil";
+row[1] = "50";
+        //Заменить на это:
+        Performance row = new Performance();
+row.setName("pencil");
+row.setWins("50");
+
+
+        // 2.3 Перенести функционал подсчета корзины на объектно-ориентированную базу.
+        // Ответ: 
+'use srtict';
+let productButtons = document.querySelectorAll('.buyBtn');
+productButtons.forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
+        let id = event.srcElement.dataset.id;
+        let price = event.srcElement.dataset.price;
+        let name = event.srcElement.dataset.name;
+        let img = event.srcElement.dataset.img;
+        cart.addProduct({ 
+            id: id, 
+            img: img,
+            price: price, 
+            name: name 
+        })
+    })
+});
+ 
+let cart = {
+    products: {},
+    /**
+     * Добавляет продукт в корзину
+    */
+    addProduct(product) {
+        this.productObject(product);
+        this.renderProduct(product);
+        this.productsTotalRender();
+        this.productAddDeleteListeners();
+        cart.productsQtyInCart();
+    },
+    /**
+     * Обрабатывает событие кнопки удаления товара
+     */
+    productDeleteListener(event) {
+        
+        cart.productDelete(event);
+        cart.productsTotalRender();
+        cart.productsQtyInCart();
+       
+    },
+    /**
+     * Добавляет слушателей события на кнопки удаления
+     */
+    productAddDeleteListeners() {
+        let delBtns = document.querySelectorAll('.productDelete');
+        for (let i = 0; i < delBtns.length; i++) {
+            delBtns[i].addEventListener('click', this.productDeleteListener);
+        }
+    },
+    /**
+    * Пишет сумму и количество товаров
+    */
+    productsTotalRender() {
+        document.querySelector('.shop-price').textContent = this.productsTotal();
+        
+    },
+    /**
+     * Рендерит количество продуктов
+     */
+      productsQtyInCart() {
+        let sumQtyInCart = document.querySelectorAll('.menu-shop>li').length-1;
+        document.querySelector('.clor-cart').textContent = sumQtyInCart;
+    },
+     
+    /**
+     * Сам продукт в объекте
+     */
+    productObject(product) {
+        if (this.products[product.id] == undefined) {
+            this.products[product.id] = {
+                img:product.img,
+                price: product.price,
+                name: product.name,
+                count: 1
             }
-            if (check) console.log(nums);
-            nums++;
         }
-
-        // ------------------------------------------------------------------------------------------------------------
-
-        // 2. С этого урока начинаем работать с функционалом интернет-магазина. Предположим, есть сущность корзины. Нужно реализовать функционал подсчета стоимости корзины в зависимости от находящихся в ней товаров.
-
-        console.log('======== 2 задание ========');
-        let basket = [
-            {
-                product: "pen",
-                price: getNumber(50, 100)
-            },
-            {
-                product: "pencil",
-                price: getNumber(50, 100)
-            },
-            {
-                product: "file",
-                price: getNumber(50, 100)
-            },
-            {
-                product: "paper",
-                price: getNumber(50, 100)
-            }
-        ];
-        let basketPrice = 0;
-        for (let prod of basket){
-            basketPrice += prod.price;
-            console.log("Товар " + prod.product + " стоит: " + prod.price);
+        
+        else {
+            this.products[product.id].count++;
         }
-
-        console.log("Стоимость корзины: " + basketPrice + " у.е.");
-
-        // ------------------------------------------------------------------------------------------------------------
-
-        // 3. Товары в корзине хранятся в массиве. Задачи:
-        // a) Организовать такой массив для хранения товаров в корзине;
-        // b) Организовать функцию countBasketPrice, которая будет считать стоимость корзины.
-
-        console.log('======== 3 задание ========');
-        function countBasketPrice(basket) {
-            let funBasketPrice = 0;
-            for (let prod of basket){
-                funBasketPrice += prod.price;
-            }
-            return funBasketPrice;
+    },
+    /**
+      * Отрисовывает продукт в корзине
+      */
+    renderProduct(product) {
+        let productCartExists = document.querySelector(`.productCount[data-id="${product.id}"]`);
+        if (productCartExists !== null) {
+            productCartExists.textContent++;
+            return;
         }
-
-        console.log("Стоимость корзины: " + countBasketPrice(basket) + " у.е.");
-
-        // ------------------------------------------------------------------------------------------------------------
-
-        // 4.*Вывести с помощью цикла for числа от 0 до 9, не используя тело цикла. Выглядеть это должно так:
-        //     for(…){// здесь пусто}
-
-        console.log('======== 4 задание ========');
-        for (let i = 0; i < 10; console.log(i++)) {}
-
-        // ------------------------------------------------------------------------------------------------------------
-
-        // 5) *Нарисовать пирамиду с помощью console.log, как показано на рисунке, только у вашей пирамиды должно быть 20 рядов, а не 5:
-        // x
-        // xx
-        // xxx
-        // xxxx
-        // xxxxx
-
-        console.log('======== 5 задание ========');
-        let row = 'x';
-        for (let i = 0; i < 20; i++){
-            console.log(row);
-            row += 'x';
+        let productUnit = `
+                            <li class="shop-item">
+                                        <div class="shop-cart">
+                                            <div class="image-shop">
+                                                <img src="${product.img}" alt="">
+                                            </div>
+                                            <div class="next-shop">
+                                                <i class="fa fa-times-circle productDelete" data-id="${product.id}"></i>
+                                            </div>
+                                            <div class="list-names">
+                                                <a href="${product.id}">${product.name}</a>
+ 
+                                            </div>
+                                            <span class="price">
+                                                <span class="amount">${product.price} руб/м2</span>
+                                            </span>
+                                            <div class="list-qty">
+                                                <p>ШТУК: <span class="productCount" data-id="${product.id}">1</span></p>
+                                            </div>
+                                        </div></li>
+ 
+                            `;
+        let tbody = document.querySelector('.menu-shop');
+        tbody.insertAdjacentHTML("afterbegin", productUnit);
+    },
+    /**
+     * Считает общую сумму
+     */
+    productsTotal() {
+        let sumTotal = 0;
+        for (let ids in this.products) {
+            sumTotal += this.products[ids].price * this.products[ids].count;
         }
+        return sumTotal;
+    },
 
     </script>
 (c) Пронин Алексей 2021
